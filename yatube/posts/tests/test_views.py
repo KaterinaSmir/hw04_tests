@@ -71,18 +71,22 @@ class PostViewsTests(PostTestSetUpMixin):
                     first_object.group.title, GroupLocators.TITLE
                 )
                 self.assertEqual(first_object.text, PostLocators.TEXT)
-                self.assertEqual(first_object.image, f'posts/{PostLocators.GIF_FOR_TEST_NAME_VIEWS}', )
+                self.assertEqual(first_object.image,
+                    f'posts/{PostLocators.GIF_FOR_TEST_NAME_VIEWS}', )
 
     def test_post_views_index_cache_check(self):
-        initial_response = self.authorized_client.get(PostPagesLocators.POST_INDEX).content
+        initial_response = self.authorized_client.get(
+            PostPagesLocators.POST_INDEX).content
         Post.objects.get(pk=PostLocators.PK).delete()
-        cache_response = self.authorized_client.get(PostPagesLocators.POST_INDEX).content
+        cache_response = self.authorized_client.get(
+            PostPagesLocators.POST_INDEX).content
         self.assertEqual(
             initial_response,
             cache_response
         )
         cache.clear()
-        response_after_clear_cashe = self.authorized_client.get(PostPagesLocators.POST_INDEX).content
+        response_after_clear_cashe = self.authorized_client.get(
+            PostPagesLocators.POST_INDEX).content
         self.assertNotEqual(
             initial_response,
             response_after_clear_cashe,
@@ -142,8 +146,10 @@ class FollowViewsTests(TestCase):
         """Создаем тестового пользователя, группу и пост."""
         super().setUpClass()
         cls.user = User.objects.create_user(username=UserLocators.USERNAME)
-        cls.user_author = User.objects.create_user(username=UserLocators.USERNAME2)
-        cls.user_for_check = User.objects.create_user(username=UserLocators.USERNAME3)
+        cls.user_author = User.objects.create_user(
+            username=UserLocators.USERNAME2)
+        cls.user_for_check = User.objects.create_user(
+            username=UserLocators.USERNAME3)
         cls.group = Group.objects.create(
             title=GroupLocators.TITLE,
             slug=GroupLocators.SLUG,

@@ -74,8 +74,10 @@ class PostPagesLocators:
     POST_EDIT = reverse('posts:post_edit', kwargs={'post_id': '4242'})
     POST_DETAIL = reverse('posts:post_detail', kwargs={'post_id': '4242'})
     ADD_COMMENT = reverse('posts:add_comment', kwargs={'post_id': '4242'})
-    FOLLOW_USER_AUTHOR = reverse('posts:profile_follow', kwargs={'username': 'auth2'})
-    UNFOLLOW_USER_AUTHOR = reverse('posts:profile_unfollow', kwargs={'username': 'auth2'})
+    FOLLOW_USER_AUTHOR = reverse('posts:profile_follow',
+        kwargs={'username': 'auth2'})
+    UNFOLLOW_USER_AUTHOR = reverse('posts:profile_unfollow',
+        kwargs={'username': 'auth2'})
     FOLLOW_INDEX = reverse('posts:follow_index')
     templates_url_names = (
         ('posts/index.html', '/'),
