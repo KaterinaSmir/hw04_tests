@@ -71,7 +71,8 @@ class PostViewsTests(PostTestSetUpMixin):
                     first_object.group.title, GroupLocators.TITLE
                 )
                 self.assertEqual(first_object.text, PostLocators.TEXT)
-                self.assertEqual(first_object.image,
+                self.assertEqual(
+                    first_object.image,
                     f'posts/{PostLocators.GIF_FOR_TEST_NAME_VIEWS}',
                 )
 
