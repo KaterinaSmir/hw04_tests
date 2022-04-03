@@ -72,8 +72,8 @@ class PostViewsTests(PostTestSetUpMixin):
                 )
                 self.assertEqual(first_object.text, PostLocators.TEXT)
                 self.assertEqual(first_object.image,
-                    f'posts/{PostLocators.GIF_FOR_TEST_NAME_VIEWS}',
-                    )
+                                 f'posts/{PostLocators.GIF_FOR_TEST_NAME_VIEWS}',
+                                )
 
     def test_post_views_index_cache_check(self):
         initial_response = self.authorized_client.get(
