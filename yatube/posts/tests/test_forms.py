@@ -59,8 +59,7 @@ class PostModelTest(TestCase):
             reverse(
                 'posts:post_edit',
                 kwargs={'post_id': self.post.id}
-                ),
-            data=form_data
+            ), data=form_data
         )
         self.assertRedirects(
             response, reverse(
