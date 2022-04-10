@@ -31,7 +31,8 @@ class PostURLTests(TestCase):
     def test_status_code(self):
         urls = {
             reverse('posts:index'): HTTPStatus.OK,
-            reverse('posts:group_list', kwargs={'slug': self.group.slug}): HTTPStatus.OK,
+            reverse('posts:group_list',
+                    kwargs={'slug': self.group.slug}): HTTPStatus.OK,
             '/something_else/': HTTPStatus.NOT_FOUND,
         }
 
@@ -59,7 +60,7 @@ class PostURLTests(TestCase):
 
     def test_correct_templates_by_urls_path_by_authorized_user(self):
         path_pairs = {
-            f'/create/': 'posts/create_post.html',
+            '/create/': 'posts/create_post.html',
             f'/posts/{self.post.pk}/edit/': 'posts/create_post.html',
         }
         for address, template in path_pairs.items():

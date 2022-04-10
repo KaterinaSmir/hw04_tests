@@ -7,6 +7,7 @@ from ..models import Group, Post
 
 User = get_user_model()
 
+
 class PostModelTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -33,22 +34,36 @@ class PostModelTest(TestCase):
             'text': self.post.text,
             'group': self.group.pk
         }
-        response = self.authorized_client.post(reverse('posts:post_create'), data=form_data)
+        response = self.authorized_client.post(
+                                               reverse('posts:post_create'),
+                                               data=form_data
+                                               )
         self.assertEqual(posts_num + 1, Post.objects.count())
 
         last_post = Post.objects.first()
         self.assertEqual(form_data['text'], last_post.text)
         self.assertEqual(form_data['group'], last_post.group.pk)
-        self.assertRedirects(response, reverse('posts:profile', kwargs={'username': self.user.username}))
+        self.assertRedirects(
+                             response,
+                             reverse('posts:profile',
+                             kwargs={'username': self.user.username})
+                             )
 
     def test_edit_post_form(self):
         form_data = {
             'text': self.post.text * 2,
             'group': self.group.pk
         }
-        response = self.authorized_client.post(reverse('posts:post_edit', kwargs={'post_id': self.post.id}), data=form_data)
-        self.assertRedirects(response,  reverse('posts:post_detail', kwargs={'post_id': self.post.id}))
+        response = self.authorized_client.post(
+                                               reverse('posts:post_edit',
+                                               kwargs={'post_id': self.post.id}),
+                                               data=form_data
+                                               )
+        self.assertRedirects(
+                             response, reverse(
+                             'posts:post_detail',
+                             kwargs={'post_id': self.post.id})
+                             )
         post = get_object_or_404(Post, pk=self.post.id)
         self.assertEqual(form_data['text'], post.text)
         self.assertEqual(form_data['group'], post.group.pk)
-        
