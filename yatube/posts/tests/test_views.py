@@ -50,14 +50,18 @@ class PostURLTests(TestCase):
         templates = {
             reverse('posts:index'): 'posts/index.html',
             reverse('posts:group_list',
-                kwargs={'slug': self.group.slug}): 'posts/group_list.html',
+                kwargs={'slug': self.group.slug}
+            ): 'posts/group_list.html',
             reverse('posts:profile',
-                kwargs={'username': self.user.username}): 'posts/profile.html',
+                kwargs={'username': self.user.username}
+            ): 'posts/profile.html',
             reverse('posts:post_detail',
-                kwargs={'post_id': self.post.pk}): 'posts/post_detail.html',
+                kwargs={'post_id': self.post.pk}
+            ): 'posts/post_detail.html',
             reverse('posts:post_create'): 'posts/create_post.html',
             reverse('posts:post_edit',
-                kwargs={'post_id': self.post.pk}): 'posts/create_post.html',
+                kwargs={'post_id': self.post.pk}
+            ): 'posts/create_post.html',
         }
         for name, template in templates.items():
             with self.subTest(name=name):
@@ -82,7 +86,8 @@ class PostURLTests(TestCase):
     def test_group_list_page_get_correct_context(self):
         response = self.client.get(
             reverse('posts:group_list',
-            kwargs={'slug': self.group.slug})
+                kwargs={'slug': self.group.slug}
+            )
         )
         first_post = response.context['page_obj'][0]
         context_items = {
@@ -119,7 +124,8 @@ class PostURLTests(TestCase):
     def test_post_detail_page_get_correct_context(self):
         response = self.client.get(
             reverse('posts:post_detail',
-            kwargs={'post_id': self.post.pk})
+                kwargs={'post_id': self.post.pk}
+            )
         )
         post = response.context['post']
         self.assertEqual(post.id, self.post.pk)
@@ -140,7 +146,8 @@ class PostURLTests(TestCase):
     def test_post_edit_page_get_correct_context(self):
         response = self.authorized_client.get(
             reverse('posts:post_edit',
-            kwargs={'post_id': self.post.pk})
+                kwargs={'post_id': self.post.pk}
+            )
         )
         form = {
             'text': forms.fields.CharField,
@@ -170,11 +177,11 @@ class PostURLTests(TestCase):
         pages = [
             reverse('posts:index') + f'?page={last_page_num}',
             reverse('posts:group_list',
-                    kwargs={'slug': self.group.slug})+
-                    f'?page={last_page_num}',
+                    kwargs={'slug': self.group.slug}
+                ) + f'?page={last_page_num}',
             reverse('posts:profile',
-                    kwargs={'username': self.user.username})+
-                    f'?page={last_page_num}'
+                    kwargs={'username': self.user.username}
+                ) + f'?page={last_page_num}'
         ]
         for page in pages:
             with self.subTest(page=page):
@@ -189,11 +196,11 @@ class PostURLTests(TestCase):
         pages = [
             reverse('posts:index') + f'?page={last_page_num}',
             reverse('posts:group_list',
-                kwargs={'slug': self.another_group.slug})+
-                f'?page={last_page_num}',
+                kwargs={'slug': self.another_group.slug}
+            ) + f'?page={last_page_num}',
             reverse('posts:profile',
-                kwargs={'username': self.user.username})+
-                f'?page={last_page_num}'
+                kwargs={'username': self.user.username}
+            ) + f'?page={last_page_num}'
         ]
         for page in pages:
             with self.subTest(page=page):
@@ -211,13 +218,16 @@ class PostURLTests(TestCase):
                 )
         response = self.authorized_client.get(
             reverse('posts:group_list',
-            kwargs={'slug': self.group.slug}) + f'?page={last_page_num}'
+                kwargs={'slug': self.group.slug}
+            ) + f'?page={last_page_num}'
         )
         posts_on_page = response.context['page_obj']
         response = self.authorized_client.get(
             reverse('posts:group_list',
-            kwargs={'slug': self.group.slug}) + f'?page={last_page_num}'
+                kwargs={'slug': self.group.slug}
+            ) + f'?page={last_page_num}'
         )
-        self.assertEqual(len(response.context['page_obj']),
+        self.assertEqual(
+            len(response.context['page_obj']),
             len(posts_on_page)
         )
