@@ -44,9 +44,10 @@ class PostModelTest(TestCase):
         self.assertEqual(form_data['text'], last_post.text)
         self.assertEqual(form_data['group'], last_post.group.pk)
         self.assertRedirects(
-            response,
-            reverse('posts:profile',
-            kwargs={'username': self.user.username})
+            response, reverse(
+                'posts:profile',
+                kwargs={'username': self.user.username}
+            )
         )
 
     def test_edit_post_form(self):
@@ -55,14 +56,17 @@ class PostModelTest(TestCase):
             'group': self.group.pk
         }
         response = self.authorized_client.post(
-            reverse('posts:post_edit',
-            kwargs={'post_id': self.post.id}),
+            reverse(
+                'posts:post_edit',
+                kwargs={'post_id': self.post.id}
+                ),
             data=form_data
         )
         self.assertRedirects(
             response, reverse(
-            'posts:post_detail',
-            kwargs={'post_id': self.post.id})
+                'posts:post_detail',
+                kwargs={'post_id': self.post.id}
+            )
         )
         post = get_object_or_404(Post, pk=self.post.id)
         self.assertEqual(form_data['text'], post.text)
