@@ -35,19 +35,19 @@ class PostModelTest(TestCase):
             'group': self.group.pk
         }
         response = self.authorized_client.post(
-                                               reverse('posts:post_create'),
-                                               data=form_data
-                                               )
+            reverse('posts:post_create'),
+            data=form_data
+        )
         self.assertEqual(posts_num + 1, Post.objects.count())
 
         last_post = Post.objects.first()
         self.assertEqual(form_data['text'], last_post.text)
         self.assertEqual(form_data['group'], last_post.group.pk)
         self.assertRedirects(
-                             response,
-                             reverse('posts:profile',
-                             kwargs={'username': self.user.username})
-                             )
+            response,
+            reverse('posts:profile',
+            kwargs={'username': self.user.username})
+        )
 
     def test_edit_post_form(self):
         form_data = {
@@ -55,15 +55,15 @@ class PostModelTest(TestCase):
             'group': self.group.pk
         }
         response = self.authorized_client.post(
-                                               reverse('posts:post_edit',
-                                               kwargs={'post_id': self.post.id}),
-                                               data=form_data
-                                               )
+            reverse('posts:post_edit',
+            kwargs={'post_id': self.post.id}),
+            data=form_data
+        )
         self.assertRedirects(
-                             response, reverse(
-                             'posts:post_detail',
-                             kwargs={'post_id': self.post.id})
-                             )
+            response, reverse(
+            'posts:post_detail',
+            kwargs={'post_id': self.post.id})
+        )
         post = get_object_or_404(Post, pk=self.post.id)
         self.assertEqual(form_data['text'], post.text)
         self.assertEqual(form_data['group'], post.group.pk)
