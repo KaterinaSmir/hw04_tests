@@ -1,88 +1,54 @@
-from django.test import Client
-from ..models import Post, Comment
-from .set_up_tests import (
-    PostTestSetUpMixin, PostPagesLocators, GroupLocators, PostLocators
-)
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
+from django.urls import reverse
+from django.shortcuts import get_object_or_404
+from ..models import Group, Post
 
 
-class PostCreateFormTests(PostTestSetUpMixin):
+User = get_user_model()
+
+class PostModelTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username='test_user')
+        cls.group = Group.objects.create(
+            title='test_group',
+            slug='test_slug',
+            description='test_description',
+        )
+        cls.post = Post.objects.create(
+            author=cls.user,
+            text='test_text',
+            group=cls.group,
+        )
+
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
-    def test_posts_forms_create_post(self):
-        """Валидная форма создает запись в Post."""
-        posts_count = Post.objects.count()
+    def test_create_post_form(self):
+        posts_num = Post.objects.count()
         form_data = {
-            'text': PostLocators.TEXT_FOR_FORM,
-            'group': GroupLocators.PK,
-            'image': PostLocators.IMAGE_UPLOADED,
+            'text': self.post.text,
+            'group': self.group.pk
         }
-        response = self.authorized_client.post(
-            PostPagesLocators.POST_CREATE,
-            data=form_data,
-            follow=True
-        )
-        self.assertRedirects(response, PostPagesLocators.POST_PROFILE)
-        self.assertEqual(Post.objects.count(), posts_count + 1)
-        self.assertTrue(
-            Post.objects.filter(
-                text=PostLocators.TEXT_FOR_FORM,
-                group=PostCreateFormTests.group,
-                image=f'posts/{PostLocators.GIF_FOR_TEST_NAME}',
-            ).exists()
-        )
+        response = self.authorized_client.post(reverse('posts:post_create'), data=form_data)
+        self.assertEqual(posts_num + 1, Post.objects.count())
 
-    def test_posts_forms_edit_post(self):
-        """Форма редактирует запись в Post."""
-        posts_count = Post.objects.count()
+        last_post = Post.objects.first()
+        self.assertEqual(form_data['text'], last_post.text)
+        self.assertEqual(form_data['group'], last_post.group.pk)
+        self.assertRedirects(response, reverse('posts:profile', kwargs={'username': self.user.username}))
+
+    def test_edit_post_form(self):
         form_data = {
-            'text': PostLocators.EDIT_FORM_TEXT,
-            'group': GroupLocators.PK,
+            'text': self.post.text * 2,
+            'group': self.group.pk
         }
-        response = self.authorized_client.post(
-            PostPagesLocators.POST_EDIT,
-            data=form_data,
-            follow=True
-        )
-        self.assertRedirects(response, PostPagesLocators.POST_DETAIL)
-        self.assertEqual(Post.objects.count(), posts_count)
-        response = self.authorized_client.get(PostPagesLocators.POST_DETAIL)
-        text_post_object = response.context['page_obj'].text
-        self.assertEqual(text_post_object, PostLocators.EDIT_FORM_TEXT)
-
-
-class CommentCreateFormTests(PostTestSetUpMixin):
-    def setUp(self):
-        self.guest_client = Client()
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
-
-    def test_comment_comment_authorized_client(self):
-        comments_count = Comment.objects.filter(post=PostLocators.PK).count()
-        form_data = {
-            'text': PostLocators.COMMENT_POST_TEXT_FORM,
-        }
-        self.authorized_client.post(
-            PostPagesLocators.ADD_COMMENT,
-            data=form_data,
-            follow=True
-        )
-        self.assertEqual(
-            Comment.objects.filter(post=PostLocators.PK).count(),
-            comments_count + 1
-        )
-        self.assertTrue(
-            Comment.objects.filter(
-                text=PostLocators.COMMENT_POST_TEXT_FORM,
-            ).exists()
-        )
-        self.guest_client.post(
-            PostPagesLocators.ADD_COMMENT,
-            data=form_data,
-            follow=True
-        )
-        self.assertEqual(
-            Comment.objects.filter(post=PostLocators.PK).count(),
-            comments_count + 1
-        )
+        response = self.authorized_client.post(reverse('posts:post_edit', kwargs={'post_id': self.post.id}), data=form_data)
+        self.assertRedirects(response,  reverse('posts:post_detail', kwargs={'post_id': self.post.id}))
+        post = get_object_or_404(Post, pk=self.post.id)
+        self.assertEqual(form_data['text'], post.text)
+        self.assertEqual(form_data['group'], post.group.pk)
+        

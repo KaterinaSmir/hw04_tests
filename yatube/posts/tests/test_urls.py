@@ -1,43 +1,68 @@
 from http import HTTPStatus
-from django.test import Client
-from .set_up_tests import PostTestSetUpMixin, PostPagesLocators
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
+from django.urls import reverse
+from ..models import Group, Post
 
 
-class PostURLTests(PostTestSetUpMixin):
+User = get_user_model()
+
+
+class PostURLTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username='test_user')
+        cls.group = Group.objects.create(
+            title='test_group',
+            slug='test_slug',
+            description='test_description',
+        )
+        cls.post = Post.objects.create(
+            author=cls.user,
+            text='test_text',
+            group=cls.group,
+        )
+
     def setUp(self):
-        self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
-        self.response_404 = HTTPStatus.NOT_FOUND
-        self.response_200 = HTTPStatus.OK
 
-    def test_post_urls_for_guest_exists_at_desired_location(self):
-        """Проверяем общедоступные страницы."""
-        self.check_url_response(PostPagesLocators.GUEST_PAGES)
+    def test_status_code(self):
+        urls = {
+            reverse('posts:index'): HTTPStatus.OK,
+            reverse('posts:group_list', kwargs={'slug': self.group.slug}): HTTPStatus.OK,
+            '/something_else/': HTTPStatus.NOT_FOUND,
+        }
 
-    def test_post_urls_for_user_exists_at_desired_location(self):
-        """Проверяем доступность страницы создания и редактирования поста"""
-        self.check_url_response(
-            PostPagesLocators.CREATE_EDIT_PAGES, authorized=True
-        )
-
-    def test_post_urls_for_user_redirect_anonymous_on_login(self):
-        """Редирект страниц создания и редактирования поста."""
-        self.check_url_response(
-            PostPagesLocators.CREATE_EDIT_PAGES, redirect=True
-        )
-
-    def test_post_urls_404_page_exists_at_desired_location(self):
-        """Проверяем неизвестный адрес, который должен вернуть 404 статус."""
-        response = self.guest_client.get(PostPagesLocators.PAGE_404)
-        self.assertEqual(
-            response.status_code,
-            self.response_404,
-        )
-
-    def test_post_urls_uses_correct_template(self):
-        """URL-адрес всех страниц в urls использует соответствующий шаблон."""
-        for template, url in PostPagesLocators.templates_url_names:
+        for url, response_status in urls.items():
             with self.subTest(url=url):
-                response = self.authorized_client.get(url)
+                status = self.client.get(url).status_code
+                self.assertEqual(status, response_status)
+
+    def test_redirect_not_authorized_user(self):
+        response = self.client.get('/create/')
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertTrue(response, '/accounts/login/')
+
+    def test_correct_templates_by_urls_path(self):
+        path_pairs = {
+            '/': 'posts/index.html',
+            f'/group/{self.group.slug}/': 'posts/group_list.html',
+            f'/profile/{self.user.username}/': 'posts/profile.html',
+            f'/posts/{self.post.pk}/': 'posts/post_detail.html',
+        }
+        for address, template in path_pairs.items():
+            with self.subTest(address=address):
+                response = self.client.get(address)
+                self.assertTemplateUsed(response, template)
+
+    def test_correct_templates_by_urls_path_by_authorized_user(self):
+        path_pairs = {
+            f'/create/': 'posts/create_post.html',
+            f'/posts/{self.post.pk}/edit/': 'posts/create_post.html',
+        }
+        for address, template in path_pairs.items():
+            with self.subTest(address=address):
+                response = self.authorized_client.get(address)
                 self.assertTemplateUsed(response, template)
