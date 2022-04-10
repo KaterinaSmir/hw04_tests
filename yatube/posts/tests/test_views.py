@@ -49,17 +49,21 @@ class PostURLTests(TestCase):
     def test_url_names_use_correct_templates(self):
         templates = {
             reverse('posts:index'): 'posts/index.html',
-            reverse('posts:group_list',
+            reverse(
+                'posts:group_list',
                 kwargs={'slug': self.group.slug}
             ): 'posts/group_list.html',
-            reverse('posts:profile',
+            reverse(
+                'posts:profile',
                 kwargs={'username': self.user.username}
             ): 'posts/profile.html',
-            reverse('posts:post_detail',
+            reverse(
+                'posts:post_detail',
                 kwargs={'post_id': self.post.pk}
             ): 'posts/post_detail.html',
             reverse('posts:post_create'): 'posts/create_post.html',
-            reverse('posts:post_edit',
+            reverse(
+                'posts:post_edit',
                 kwargs={'post_id': self.post.pk}
             ): 'posts/create_post.html',
         }
@@ -232,12 +236,6 @@ class PostURLTests(TestCase):
             ) + f'?page={last_page_num}'
         )
         posts_on_page = response.context['page_obj']
-        response = self.authorized_client.get(
-            reverse(
-                'posts:group_list',
-                kwargs={'slug': self.group.slug}
-            ) + f'?page={last_page_num}'
-        )
         self.assertEqual(
             len(response.context['page_obj']),
             len(posts_on_page)
