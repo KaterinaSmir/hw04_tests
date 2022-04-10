@@ -85,7 +85,8 @@ class PostURLTests(TestCase):
 
     def test_group_list_page_get_correct_context(self):
         response = self.client.get(
-            reverse('posts:group_list',
+            reverse(
+                'posts:group_list',
                 kwargs={'slug': self.group.slug}
             )
         )
@@ -104,8 +105,10 @@ class PostURLTests(TestCase):
 
     def test_profile_page_get_correct_context(self):
         response = self.client.get(
-            reverse('posts:profile',
-            kwargs={'username': self.user.username})
+            reverse(
+                'posts:profile',
+                kwargs={'username': self.user.username}
+            )
         )
         first_post = response.context['page_obj'][0]
         context_items = {
@@ -123,7 +126,8 @@ class PostURLTests(TestCase):
 
     def test_post_detail_page_get_correct_context(self):
         response = self.client.get(
-            reverse('posts:post_detail',
+            reverse(
+                'posts:post_detail',
                 kwargs={'post_id': self.post.pk}
             )
         )
@@ -145,7 +149,8 @@ class PostURLTests(TestCase):
 
     def test_post_edit_page_get_correct_context(self):
         response = self.authorized_client.get(
-            reverse('posts:post_edit',
+            reverse(
+                'posts:post_edit',
                 kwargs={'post_id': self.post.pk}
             )
         )
@@ -176,12 +181,14 @@ class PostURLTests(TestCase):
         last_page_num = self.posts_num // NUMBER_OF_ENTIES + 1
         pages = [
             reverse('posts:index') + f'?page={last_page_num}',
-            reverse('posts:group_list',
-                    kwargs={'slug': self.group.slug}
-                ) + f'?page={last_page_num}',
-            reverse('posts:profile',
-                    kwargs={'username': self.user.username}
-                ) + f'?page={last_page_num}'
+            reverse(
+                'posts:group_list',
+                kwargs={'slug': self.group.slug}
+            ) + f'?page={last_page_num}',
+            reverse(
+                'posts:profile',
+                kwargs={'username': self.user.username}
+            ) + f'?page={last_page_num}'
         ]
         for page in pages:
             with self.subTest(page=page):
@@ -195,10 +202,12 @@ class PostURLTests(TestCase):
         last_page_num = self.posts_num // NUMBER_OF_ENTIES + 1
         pages = [
             reverse('posts:index') + f'?page={last_page_num}',
-            reverse('posts:group_list',
+            reverse(
+                'posts:group_list',
                 kwargs={'slug': self.another_group.slug}
             ) + f'?page={last_page_num}',
-            reverse('posts:profile',
+            reverse(
+                'posts:profile',
                 kwargs={'username': self.user.username}
             ) + f'?page={last_page_num}'
         ]
@@ -217,13 +226,15 @@ class PostURLTests(TestCase):
                     len(posts_on_page) + 1
                 )
         response = self.authorized_client.get(
-            reverse('posts:group_list',
+            reverse(
+                'posts:group_list',
                 kwargs={'slug': self.group.slug}
             ) + f'?page={last_page_num}'
         )
         posts_on_page = response.context['page_obj']
         response = self.authorized_client.get(
-            reverse('posts:group_list',
+            reverse(
+                'posts:group_list',
                 kwargs={'slug': self.group.slug}
             ) + f'?page={last_page_num}'
         )
