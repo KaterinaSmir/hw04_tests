@@ -1,9 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from ..models import Group, Post
-
-
-User = get_user_model()
+from ..models import Group, Post, User
 
 
 class PostModelTest(TestCase):
@@ -18,7 +15,9 @@ class PostModelTest(TestCase):
         )
         cls.post = Post.objects.create(
             author=cls.user,
-            text='test_text',
+            text="""Lorem Ipsum is simply dummy text of the printing and 
+            typesetting industry. 
+            Lorem Ipsum has been the industry's standard dummy""",
             group=cls.group,
         )
 
