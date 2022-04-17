@@ -1,6 +1,4 @@
-import time
 from django import forms
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from ..models import Group, Post, User
@@ -152,7 +150,7 @@ class PostURLTests(TestCase):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
         self.assertTrue(response.context['is_edit'])
-        self.assertIsInstance (response.context['form'],PostForm)
+        self.assertIsInstance(response.context['form'], PostForm)
 
     def test_post_edit_page_get_correct_context(self):
         response = self.authorized_client.get(
