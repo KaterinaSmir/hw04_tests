@@ -2,10 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from ..models import Group, Post
-
-
-User = get_user_model()
+from ..models import Group, Post, User
 
 
 class PostModelTest(TestCase):
@@ -40,9 +37,10 @@ class PostModelTest(TestCase):
         )
         self.assertEqual(posts_num + 1, Post.objects.count())
 
-        last_post = Post.objects.first()
+        last_post = Post.objects.latest('pub_date')
         self.assertEqual(form_data['text'], last_post.text)
         self.assertEqual(form_data['group'], last_post.group.pk)
+        self.assertEqual(self.user.username, last_post.author.username)
         self.assertRedirects(
             response, reverse(
                 'posts:profile',
@@ -51,6 +49,7 @@ class PostModelTest(TestCase):
         )
 
     def test_edit_post_form(self):
+        posts_num = Post.objects.count()
         form_data = {
             'text': self.post.text * 2,
             'group': self.group.pk
@@ -70,3 +69,4 @@ class PostModelTest(TestCase):
         post = get_object_or_404(Post, pk=self.post.id)
         self.assertEqual(form_data['text'], post.text)
         self.assertEqual(form_data['group'], post.group.pk)
+        self.assertEqual(posts_num, Post.objects.count())
