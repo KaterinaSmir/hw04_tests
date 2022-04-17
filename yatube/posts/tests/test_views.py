@@ -3,11 +3,12 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-from ..models import Group, Post
+from ..models import Group, Post, User
 from ..views import NUMBER_OF_ENTIES
+from ..forms import PostForm
 
 
-User = get_user_model()
+NUMBER_OF_POSTS = 12
 
 
 class PostURLTests(TestCase):
@@ -26,7 +27,7 @@ class PostURLTests(TestCase):
             description='another_test_description',
         )
         posts = []
-        for num in range(12):
+        for num in range(NUMBER_OF_POSTS):
             posts.append(
                 Post.objects.create(
                     author=cls.user,
@@ -34,7 +35,7 @@ class PostURLTests(TestCase):
                     group=cls.group,
                 )
             )
-            time.sleep(0.01)
+        Post.objects.bulk_create(posts)
         cls.post = Post.objects.create(
             author=cls.user,
             text='test_text',
@@ -150,6 +151,8 @@ class PostURLTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
+        self.assertTrue(response.context['is_edit'])
+        self.assertIsInstance (response.context['form'],PostForm)
 
     def test_post_edit_page_get_correct_context(self):
         response = self.authorized_client.get(
