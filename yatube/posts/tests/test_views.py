@@ -33,7 +33,7 @@ class PostURLTests(TestCase):
                     group=cls.group,
                 )
             )
-            Post.objects.bulk_create(posts)
+        Post.objects.bulk_create([posts])
         cls.post = Post.objects.create(
             author=cls.user,
             text='test_text',
