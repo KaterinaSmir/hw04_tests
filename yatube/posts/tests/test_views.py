@@ -33,7 +33,7 @@ class PostURLTests(TestCase):
                     group=cls.group,
                 )
             )
-        Post.objects.bulk_create(posts)
+            Post.objects.bulk_create(posts)
         cls.post = Post.objects.create(
             author=cls.user,
             text='test_text',
@@ -149,8 +149,8 @@ class PostURLTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
-                self.assertTrue(response.context['is_edit'])
-                self.assertIsInstance(response.context['form'], PostForm)
+        self.assertTrue(response.context['is_edit'])
+        self.assertIsInstance(response.context['form'], PostForm)
 
     def test_post_edit_page_get_correct_context(self):
         response = self.authorized_client.get(
