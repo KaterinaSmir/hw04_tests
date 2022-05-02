@@ -25,10 +25,10 @@ class PostURLTests(TestCase):
             description='another_test_description',
         )
         Post.objects.bulk_create(list([Post(
-                    author=cls.user,
-                    text=f'test_text_{num}',
-                    group=cls.group,
-                ) for num in range(NUMBER_OF_POSTS)]))
+            author=cls.user,
+            text=f'test_text_{num}',
+            group=cls.group,
+        ) for num in range(NUMBER_OF_POSTS)]))
         cls.post = Post.objects.create(
             author=cls.user,
             text='test_text',
