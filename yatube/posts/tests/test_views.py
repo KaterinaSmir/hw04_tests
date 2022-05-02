@@ -165,7 +165,6 @@ class PostURLTests(TestCase):
         self.assertTrue(response.context['is_edit'])
         self.assertIsInstance(response.context['form'], PostForm)
 
-
     def test_posts_number_on_first_page(self):
         pages = [
             reverse('posts:index'),
