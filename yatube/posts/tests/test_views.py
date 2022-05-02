@@ -24,16 +24,11 @@ class PostURLTests(TestCase):
             slug='another_test_slug',
             description='another_test_description',
         )
-        posts = []
-        for num in range(NUMBER_OF_POSTS):
-            posts.append(
-                Post.objects.create(
+        Post.objects.bulk_create(list([Post(
                     author=cls.user,
                     text=f'test_text_{num}',
                     group=cls.group,
-                )
-            )
-        Post.objects.bulk_create([posts])
+                ) for num in range(NUMBER_OF_POSTS)]))
         cls.post = Post.objects.create(
             author=cls.user,
             text='test_text',
