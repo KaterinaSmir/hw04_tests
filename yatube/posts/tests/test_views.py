@@ -144,7 +144,6 @@ class PostURLTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
-        self.assertTrue(response.context['is_edit'])
         self.assertIsInstance(response.context['form'], PostForm)
 
     def test_post_edit_page_get_correct_context(self):
@@ -163,7 +162,7 @@ class PostURLTests(TestCase):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
         self.assertTrue(response.context['is_edit'])
-        self.assertIsInstance(response.context['form'], PostForm)
+        
 
     def test_posts_number_on_first_page(self):
         pages = [
