@@ -162,7 +162,6 @@ class PostURLTests(TestCase):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
         self.assertTrue(response.context['is_edit'])
-        
 
     def test_posts_number_on_first_page(self):
         pages = [
