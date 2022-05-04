@@ -235,7 +235,7 @@ class PostURLTests(TestCase):
             len(response.context['page_obj']),
             len(posts_on_page)
         )
-        
+
    def test_unauthorized_user_post(self):
         self.client.logout()
 
