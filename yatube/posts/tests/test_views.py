@@ -235,14 +235,3 @@ class PostURLTests(TestCase):
             len(response.context['page_obj']),
             len(posts_on_page)
         )
-
-   def test_unauthorized_user_post(self):
-        self.client.logout()
-
-        data = {'text': 'text', "group": self.group.id}
-        response = self.client.post(reverse("new_post"),
-                                    data=data, follow=True)
-        posts_count = Post.objects.all().count()
-
-        self.assertEqual(posts_count, 0)
-        self.assertRedirects(response, '/auth/login/?next=/new/')
